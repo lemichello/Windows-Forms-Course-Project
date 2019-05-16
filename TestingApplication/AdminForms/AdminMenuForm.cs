@@ -190,15 +190,15 @@ namespace TestingApplication.AdminForms
         public static IEnumerable<string> CalculateUserTest(XElement user, XElement test)
         {
             yield return $"Human : {user.Element("Surname").Value} " +
-                              $"{user.Element("Name").Value} {user.Element("MiddleName").Value}\n";
+                              $"{user.Element("Name").Value} {user.Element("MiddleName").Value}\r\n";
 
-            yield return $"Address : {user.Element("Address").Value}\n";
+            yield return $"Address : {user.Element("Address").Value}\r\n";
 
-            yield return $"Is test finished : {test.Attribute("finished").Value}\n";
-            yield return $"Subject: {test.Element("Subject").Value}\n";
-            yield return $"Mark : {test.Element("Mark").Value}\n";
+            yield return $"Is test finished : {test.Attribute("finished").Value}\r\n";
+            yield return $"Subject: {test.Element("Subject").Value}\r\n";
+            yield return $"Mark : {test.Element("Mark").Value}\r\n";
 
-            yield return "\n";
+            yield return "\r\n";
         }
 
         /// <summary>
