@@ -11,7 +11,6 @@ namespace TestingApplication.Classes
 {
     public interface IStrategy
     {
-        string Path { get; }
         string Criterion { get; }
         string CriterionDescription { get; }
         void AddTestingResults(string searchingCriterion, ListBox listBox);
@@ -19,7 +18,7 @@ namespace TestingApplication.Classes
 
     public sealed class CategoryStrategy : IStrategy
     {
-        public string Path { get; }
+        private string Path { get; }
         public string Criterion { get; }
         public string CriterionDescription { get; }
 
@@ -56,7 +55,7 @@ namespace TestingApplication.Classes
 
     public sealed class TestStrategy : IStrategy
     {
-        public string Path { get; }
+        private string Path { get; }
         public string Criterion { get; }
         public string CriterionDescription { get; }
 
@@ -92,7 +91,7 @@ namespace TestingApplication.Classes
 
         public sealed class UserStrategy : IStrategy
         {
-            public string Path { get; }
+            private string Path { get; }
             public string Criterion { get; }
             public string CriterionDescription { get; }
 

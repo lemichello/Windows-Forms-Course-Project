@@ -8,7 +8,7 @@ namespace TestingApplication.UserForms
 {
     public partial class UserMenuForm : Form
     {
-        private XElement _user;
+        private readonly XElement _user;
         private XElement _unfinishedTest;
         private readonly List<string> _operations = new List<string>
         {
@@ -82,9 +82,7 @@ namespace TestingApplication.UserForms
         {
             var form = new TestPickerForm();
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var container = new TestsContainer(form.TestName, _user) {MenuParent = this};

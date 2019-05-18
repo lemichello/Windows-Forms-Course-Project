@@ -8,8 +8,8 @@ namespace TestingApplication.Classes
 {
     public struct QuestionVariant
     {
-        public string Text;
-        public bool IsCorrect;
+        public readonly string Text;
+        public readonly bool IsCorrect;
 
         public QuestionVariant(string text, bool isCorrect)
         {

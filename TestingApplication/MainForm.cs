@@ -40,10 +40,8 @@ namespace TestingApplication
         public void Login(out string login, out string password)
         {
             var form = new LoginForm();
-            
-            form.ShowDialog();
 
-            if(form.DialogResult != DialogResult.OK)
+            if(form.ShowDialog() != DialogResult.OK)
                 Close();
 
             login = form.Login;
@@ -61,9 +59,7 @@ namespace TestingApplication
         {
             var form = new RegisterUserForm();
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
             {
                 Close();
 

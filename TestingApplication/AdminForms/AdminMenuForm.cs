@@ -14,7 +14,7 @@ namespace TestingApplication.AdminForms
         private const string TestsPath = "../../../ClassLibrary/XML/tests.xml";
 
         // Operations for admin.
-        private readonly string[] Operations =
+        private readonly string[] _operations =
         {
             "Create user",
             "Delete user",
@@ -30,16 +30,16 @@ namespace TestingApplication.AdminForms
             "Exit"
         };
 
-        private readonly Action[] Methods;
+        private readonly Action[] _methods;
 
         public AdminMenuForm()
         {
             InitializeComponent();
 
-            foreach (var i in Operations)
+            foreach (var i in _operations)
                 MenuClauses.Items.Add(i);
 
-            Methods = new Action[]
+            _methods = new Action[]
             {
                 CreateUser,
                 DeleteUser,
@@ -69,9 +69,7 @@ namespace TestingApplication.AdminForms
             var form = res == DialogResult.Yes ? new ChangeLoginPasswordForm(true) : 
                 new ChangeLoginPasswordForm(false);
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             switch (res)
@@ -140,9 +138,7 @@ namespace TestingApplication.AdminForms
                 return;
             }
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             SaveTestingResultsToFile(form.TestingResults);
@@ -173,9 +169,7 @@ namespace TestingApplication.AdminForms
                 return;
             }
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             SaveTestingResultsToFile(form.TestingResults);
@@ -246,9 +240,7 @@ namespace TestingApplication.AdminForms
                 return;
             }
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             SaveTestingResultsToFile(form.TestingResults);
@@ -277,9 +269,7 @@ namespace TestingApplication.AdminForms
                 return;
             }
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var categoryName = form.CategoryName;
@@ -310,9 +300,7 @@ namespace TestingApplication.AdminForms
                 var variantForm = new FillTestForm();
                 var question = new XElement("Question");
 
-                variantForm.ShowDialog();
-
-                if (variantForm.DialogResult != DialogResult.OK)
+                if (variantForm.ShowDialog() != DialogResult.OK)
                     return;
 
                 var questionText = variantForm.QuestionText;
@@ -346,10 +334,8 @@ namespace TestingApplication.AdminForms
         {
             var form = new AddCategoryForm();
             var xDoc = XDocument.Load(TestsPath);
-
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var categoryName = form.CategoryName;
@@ -388,10 +374,8 @@ namespace TestingApplication.AdminForms
             var form = new EditUserForm();
             var xDoc = XDocument.Load(UsersPath);
             XElement user;
-
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var name = form.UserName;
@@ -442,9 +426,7 @@ namespace TestingApplication.AdminForms
             var xDoc = XDocument.Load(UsersPath);
             XElement user;
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var name = form.UserName;
@@ -480,9 +462,7 @@ namespace TestingApplication.AdminForms
             var form = new CreateUserForm();
             var xDoc = XDocument.Load(UsersPath);
 
-            form.ShowDialog();
-
-            if (form.DialogResult != DialogResult.OK)
+            if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var login = form.Login;
@@ -529,13 +509,13 @@ namespace TestingApplication.AdminForms
 
         private void ConfirmButton_Click(object sender, EventArgs e)
         {
-            if (MenuClauses.SelectedIndex == Operations.Length - 1)
+            if (MenuClauses.SelectedIndex == _operations.Length - 1)
             {
                 MdiParent.Close();
                 return;
             }
 
-            Methods[MenuClauses.SelectedIndex]();
+            _methods[MenuClauses.SelectedIndex]();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace TestingApplication
 
         private void ConfirmButton_Click(object sender, EventArgs e)
         {
+            // User hasn't entered login or password.
             if (string.IsNullOrWhiteSpace(LoginBox.Text) ||
                 string.IsNullOrWhiteSpace(PasswordBox.Text))
             {
@@ -34,13 +35,14 @@ namespace TestingApplication
             Login = LoginBox.Text;
             Password = PasswordBox.Text;
 
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
 
             Close();
         }
 
         private void RegisterButton_Click(object sender, EventArgs e)
         {
+            // User hasn't entered login.
             if (string.IsNullOrWhiteSpace(LoginBox.Text))
             {
                 MessageBox.Show("Your login is incorrect. Try again.",
@@ -52,7 +54,7 @@ namespace TestingApplication
             Login = LoginBox.Text;
             Password = "";
 
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
 
             Close();
         }
