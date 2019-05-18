@@ -52,7 +52,12 @@ namespace TestingApplication
         {
             var form = new RegisterAdminForm();
 
-            form.ShowDialog();
+            if (form.ShowDialog() != DialogResult.OK)
+            {
+                DialogResult = DialogResult.Cancel;
+                
+                Close();
+            }
         }
 
         public XElement RegisterUser(XElement nonRegisteredUser)

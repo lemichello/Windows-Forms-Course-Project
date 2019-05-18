@@ -45,7 +45,8 @@ namespace TestingApplication.Classes
             {
                 MainParent.RegisterAdmin();
 
-                Run();
+                if (MainParent.DialogResult != DialogResult.Cancel)
+                    Run();
             }
             else
             {

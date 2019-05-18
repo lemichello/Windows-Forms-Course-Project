@@ -87,7 +87,7 @@ namespace TestingApplication.Classes
             // Checking for correctivity of another XML-file.
             xDoc.Validate(schemaSet, (sender, eventArgs) =>
             {
-                MainForm.ThrowException($"Error : {eventArgs.Message}");
+                MainForm.ThrowException($"Imported XML-file is incorrect : {eventArgs.Message}");
 
                 isCorrect = false;
             });
@@ -154,7 +154,7 @@ namespace TestingApplication.Classes
             // Checking for correctivity of another XML-file.
             xDoc.Validate(schemaSet, (sender, eventArgs) =>
             {
-                MainForm.ThrowException($"Error : {eventArgs.Message}");
+                MainForm.ThrowException($"Imported XML-file is incorrect : {eventArgs.Message}");
 
                 isCorrect = false;
             });
