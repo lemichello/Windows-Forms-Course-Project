@@ -47,64 +47,71 @@ namespace TestingApplication.Classes
 
                 if (MainParent.DialogResult != DialogResult.Cancel)
                     Run();
+
+                return;
             }
-            else
+
+            MainParent.Login(out var login, out var password);
+
+            // User closed a "Login" form.
+            if (login == null && password == null)
+                return;
+
+            if (IsNonRegisteredUser(xDoc, login))
             {
-                MainParent.Login(out var login, out var password);
-
-                // User closed a "Login" form.
-                if (login == null && password == null)
-                    return;
-
-                try
+                Run();
+                return;
+            }
+            
+            try
+            {
+                var user = xDoc.Root?.Elements("User").First(i =>
                 {
-                    // Checking if user with this login is non-registered.
-                    var nonRegisteredUser = xDoc.Root?.Elements("User").First(i =>
-                    {
-                        return StringCipher.Decrypt(i.Element("Login")?.Value) == login &&
-                               i.Element("Password")?.Value == "" &&
-                               i.Attribute("type")?.Value == "user";
-                    });
+                    return StringCipher.Decrypt(i.Element("Login")?.Value) == login &&
+                           StringCipher.Decrypt(i.Element("Password")?.Value) == password;
+                });
 
-                    var registeredUser = MainParent.RegisterUser(nonRegisteredUser);
+                if (user?.Attribute("type")?.Value == "admin")
+                    MainParent.PrintAdminMenu();
+                else
+                    MainParent.PrintUserMenu(user);
+            }
+            catch (Exception err)
+            {
+                // If exception came from XDocument.
+                MainForm.ThrowException(err.Source == "mscorlib"
+                    ? err.Message
+                    : "You entered incorrect login or password. Try again");
 
-                    if(registeredUser != null)
-                        nonRegisteredUser?.ReplaceWith(registeredUser);
+                Run();
+            }
+        }
 
-                    xDoc.Save(_usersPath);
-
-                    Run();
-
-                    return;
-                }
-                // Exception will throw if these login and password are already in XML-file.
-                catch (Exception)
+        private bool IsNonRegisteredUser(XDocument xDoc, string login)
+        {
+            try
+            {
+                // Checking if user with this login is non-registered.
+                var nonRegisteredUser = xDoc.Root?.Elements("User").First(i =>
                 {
-                    // ignored
-                }
+                    return StringCipher.Decrypt(i.Element("Login")?.Value) == login &&
+                           i.Element("Password")?.Value == "" &&
+                           i.Attribute("type")?.Value == "user";
+                });
 
-                try
-                {
-                    var user = xDoc.Root?.Elements("User").First(i =>
-                    {
-                        return StringCipher.Decrypt(i.Element("Login")?.Value) == login &&
-                               StringCipher.Decrypt(i.Element("Password")?.Value) == password;
-                    });
+                var registeredUser = MainParent.RegisterUser(nonRegisteredUser);
 
-                    if (user?.Attribute("type")?.Value == "admin")
-                        MainParent.PrintAdminMenu();
-                    else
-                        MainParent.PrintUserMenu(user);
-                }
-                catch (Exception err)
-                {
-                    // If exception came from XDocument.
-                    MainForm.ThrowException(err.Source == "mscorlib"
-                        ? err.Message
-                        : "You entered incorrect login or password. Try again");
+                if(registeredUser != null)
+                    nonRegisteredUser?.ReplaceWith(registeredUser);
 
-                    Run();
-                }
+                xDoc.Save(_usersPath);
+
+                return true;
+            }
+            // Exception will throw if these login and password are already in XML-file.
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

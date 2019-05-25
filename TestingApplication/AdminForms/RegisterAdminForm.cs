@@ -14,6 +14,7 @@ namespace TestingApplication.AdminForms
         private void ConfirmButton_Click(object sender, EventArgs e)
         {
             Admin.Register(PasswordBox.Text);
+            DialogResult = DialogResult.OK;
 
             Close();
         }

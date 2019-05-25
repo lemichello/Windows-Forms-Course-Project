@@ -26,6 +26,15 @@ namespace TestingApplication.AdminForms
                 return;
             }
 
+            if (Variant1TextBox.Text == Variant2TextBox.Text ||
+                Variant1TextBox.Text == Variant3TextBox.Text ||
+                Variant2TextBox.Text == Variant3TextBox.Text)
+            {
+                MainForm.ThrowException("All question variants must be unique");
+                
+                return;
+            }
+            
             if (!Variant1RadioButton.Checked &&
                 !Variant2RadioButton.Checked &&
                 !Variant3RadioButton.Checked)

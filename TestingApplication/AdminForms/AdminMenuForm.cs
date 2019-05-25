@@ -66,8 +66,7 @@ namespace TestingApplication.AdminForms
                                       "\"No\", if you want to change password", "Question",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            var form = res == DialogResult.Yes ? new ChangeLoginPasswordForm(true) : 
-                new ChangeLoginPasswordForm(false);
+            var form = res == DialogResult.Yes ? new ChangeLoginPasswordForm(true) : new ChangeLoginPasswordForm(false);
 
             if (form.ShowDialog() != DialogResult.OK)
                 return;
@@ -149,7 +148,7 @@ namespace TestingApplication.AdminForms
         /// </summary>
         private void PrintTestingResultsByTests()
         {
-            var form = new TestingResultsForm { Strategy = new TestStrategy(UsersPath) };
+            var form = new TestingResultsForm {Strategy = new TestStrategy(UsersPath)};
             var xDoc = XDocument.Load(TestsPath);
 
             if (xDoc.Root.Elements("Category").Any(i => i.Element("Tests").HasElements))
@@ -184,7 +183,7 @@ namespace TestingApplication.AdminForms
         public static IEnumerable<string> CalculateUserTest(XElement user, XElement test)
         {
             yield return $"Human : {user.Element("Surname").Value} " +
-                              $"{user.Element("Name").Value} {user.Element("MiddleName").Value}\r\n";
+                         $"{user.Element("Name").Value} {user.Element("MiddleName").Value}\r\n";
 
             yield return $"Address : {user.Element("Address").Value}\r\n";
 
@@ -253,16 +252,8 @@ namespace TestingApplication.AdminForms
         {
             var form = new AddTestForm();
             var xDoc = XDocument.Load(TestsPath);
-            XElement category;
 
-            if (xDoc.Root.Elements("Category").Any(i => i.HasElements))
-            {
-                foreach (var i in xDoc.Root.Elements("Category"))
-                {
-                    form.AddCategoryToList($"{i.Element("Name")?.Value}");
-                }
-            }
-            else
+            if (!FillAddTestForm(xDoc, form))
             {
                 MainForm.ThrowException("There\'s no any categories. You should add one.");
 
@@ -274,6 +265,32 @@ namespace TestingApplication.AdminForms
 
             var categoryName = form.CategoryName;
 
+            if (!FindCategory(xDoc, out var category, categoryName))
+            {
+                MainForm.ThrowException("Not found a category name. Try again.");
+
+                AddTest();
+                return;
+            }
+
+            FillTest(form, category, xDoc);
+        }
+
+        private static bool FillAddTestForm(XDocument xDoc, AddTestForm form)
+        {
+            if (!xDoc.Root.Elements("Category").Any(i => i.HasElements))
+                return false;
+
+            foreach (var i in xDoc.Root.Elements("Category"))
+            {
+                form.AddCategoryToList($"{i.Element("Name")?.Value}");
+            }
+
+            return true;
+        }
+
+        private bool FindCategory(XDocument xDoc, out XElement category, string categoryName)
+        {
             try
             {
                 category = xDoc.Root?.Elements("Category").First(i => i.Element("Name")?.Value == categoryName);
@@ -281,15 +298,17 @@ namespace TestingApplication.AdminForms
             // Exception will throw if while-loop will not find a name of category in XML-file.
             catch (Exception)
             {
-                MainForm.ThrowException("Not found a category name. Try again.");
-
-                AddTest();
-
-                return;
+                category = null;
+                return false;
             }
 
+            return true;
+        }
+
+        private static void FillTest(AddTestForm form, XElement category, XDocument xDoc)
+        {
             var testName = form.TestName;
-            var test = new XElement("Test");
+            var test     = new XElement("Test");
 
             test.Add(new XElement("Name", testName));
 
@@ -298,7 +317,7 @@ namespace TestingApplication.AdminForms
             for (var i = 0; i < numberOfQuestions; i++)
             {
                 var variantForm = new FillTestForm();
-                var question = new XElement("Question");
+                var question    = new XElement("Question");
 
                 if (variantForm.ShowDialog() != DialogResult.OK)
                     return;
@@ -334,27 +353,25 @@ namespace TestingApplication.AdminForms
         {
             var form = new AddCategoryForm();
             var xDoc = XDocument.Load(TestsPath);
-            
+
             if (form.ShowDialog() != DialogResult.OK)
                 return;
 
             var categoryName = form.CategoryName;
 
-            try
+            if (CategoryExists(xDoc, categoryName))
             {
-                while (xDoc.Root?.Elements("Category").First(i => i.Element("Name")?.Value == categoryName) != null)
-                {
-                    MainForm.ThrowException("This category is already exists. Try another.");
+                MainForm.ThrowException("This category is already exists. Try another.");
 
-                    AddCategory();
-                }
-            }
-            // Exception will throw if while-loop will not find a name of category in XML-file.
-            catch (Exception)
-            {
-                // ignored
+                AddCategory();
+                return;
             }
 
+            SaveNewCategory(categoryName, xDoc);
+        }
+
+        private static void SaveNewCategory(string categoryName, XDocument xDoc)
+        {
             var category = new XElement("Category");
 
             category.Add(new XElement("Name", categoryName));
@@ -366,32 +383,49 @@ namespace TestingApplication.AdminForms
             xDoc.Save(TestsPath);
         }
 
+        private bool CategoryExists(XDocument xDoc, string categoryName)
+        {
+            try
+            {
+                while (xDoc.Root?.Elements("Category").First(i => i.Element("Name")?.Value == categoryName) != null)
+                {
+                    return true;
+                }
+            }
+            // Exception will throw if while-loop will not find a name of category in XML-file.
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Edits a user.
         /// </summary>
         private void EditUser()
         {
-            var form = new EditUserForm();
-            var xDoc = XDocument.Load(UsersPath);
+            var      form = new EditUserForm();
+            var      xDoc = XDocument.Load(UsersPath);
             XElement user;
-            
+
             if (form.ShowDialog() != DialogResult.OK)
                 return;
 
-            var name = form.UserName;
+            var name    = form.UserName;
             var surname = form.Surname;
 
             try
             {
                 user = xDoc.Root?.Elements("User").First(i => i.Element("Name")?.Value == name &&
-                                                                  i.Element("Surname")?.Value == surname);
+                                                              i.Element("Surname")?.Value == surname);
             }
             catch (Exception)
             {
                 MainForm.ThrowException("Not found a user. Try again.");
 
                 EditUser();
-
                 return;
             }
 
@@ -422,14 +456,14 @@ namespace TestingApplication.AdminForms
         /// </summary>
         private void DeleteUser()
         {
-            var form = new RemoveUserForm();
-            var xDoc = XDocument.Load(UsersPath);
+            var      form = new RemoveUserForm();
+            var      xDoc = XDocument.Load(UsersPath);
             XElement user;
 
             if (form.ShowDialog() != DialogResult.OK)
                 return;
 
-            var name = form.UserName;
+            var name    = form.UserName;
             var surname = form.Surname;
 
             try
@@ -442,7 +476,6 @@ namespace TestingApplication.AdminForms
                 MainForm.ThrowException("Not found a user. Try again.");
 
                 DeleteUser();
-
                 return;
             }
 
@@ -471,14 +504,13 @@ namespace TestingApplication.AdminForms
             {
                 // If login already exists.
                 if (xDoc.Root?.Elements("User").First(i =>
-                 {
-                     return StringCipher.Decrypt(i.Element("Login")?.Value) == login;
-                 }) != null)
+                {
+                    return StringCipher.Decrypt(i.Element("Login")?.Value) == login;
+                }) != null)
                 {
                     MainForm.ThrowException("This login is already exists. Try another.");
 
                     CreateUser();
-
                     return;
                 }
             }
@@ -500,10 +532,10 @@ namespace TestingApplication.AdminForms
             xDoc.Save(UsersPath);
         }
 
-        
+
         private void MenuClauses_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(MenuClauses.SelectedIndex != -1)
+            if (MenuClauses.SelectedIndex != -1)
                 ConfirmButton.Visible = true;
         }
 

@@ -37,7 +37,6 @@ namespace TestingApplication.Classes
         }
 
 
-
         /// <summary>
         /// Encrypts test.
         /// </summary>
@@ -77,10 +76,10 @@ namespace TestingApplication.Classes
         /// <param name="path">Path to another XML-file.</param>
         private static void AppendXml(string path)
         {
-            var xDoc = XDocument.Load(path);
+            var xDoc         = XDocument.Load(path);
             var xDocOriginal = XDocument.Load(TestsPath);
-            var schemaSet = new XmlSchemaSet();
-            bool isCorrect = true;
+            var schemaSet    = new XmlSchemaSet();
+            var isCorrect    = true;
 
             schemaSet.Add("", "../../../ClassLibrary/XML/testsSchema.xsd");
 
@@ -98,44 +97,55 @@ namespace TestingApplication.Classes
             foreach (var category in xDoc.Root.Elements("Category"))
             {
                 // If original file has the same category like another file.
-                if (xDocOriginal.Root.Elements("Category").Any(j => category.Element("Name").Value == j.Element("Name").Value))
+                if (xDocOriginal.Root.Elements("Category")
+                    .Any(j => category.Element("Name").Value == j.Element("Name").Value))
                 {
-                    // Assigning needed category from original file.
-                    var originalCategory = xDocOriginal.Root.Elements("Category")
-                        .First(j => category.Element("Name").Value == j.Element("Name").Value);
-
-                    foreach (var test in category.Element("Tests").Elements("Test"))
-                    {
-                        // If there's identical names of both tests.
-                        if (xDocOriginal.Root.Elements("Category").Elements("Tests").Elements("Test").
-                            Any(n => n.Element("Name").Value == test.Element("Name").Value))
-                            continue;
-
-                        originalCategory.Element("Tests").Add(EncryptTest(test));
-                    }
-
-                    // Replacing old category with new category in original file.
-                    xDocOriginal.Root.Elements("Category")
-                        .First(j => j.Element("Name").Value == category.Element("Name").Value).ReplaceWith(originalCategory);
+                    AppendCategory(xDocOriginal, category);
                 }
                 else
                 {
-                    var newCategory = new XElement("Category");
-
-                    newCategory.Add(new XElement("Name", category.Element("Name").Value));
-
-                    newCategory.Add(new XElement("Tests", ""));
-
-                    foreach (var j in category.Element("Tests").Elements("Test"))
-                    {
-                        newCategory.Element("Tests").Add(EncryptTest(j));
-                    }
-
-                    xDocOriginal.Root.Add(newCategory);
+                    CreateNewCategory(category, xDocOriginal);
                 }
             }
 
             xDocOriginal.Save(TestsPath);
+        }
+
+        private static void CreateNewCategory(XElement category, XDocument xDocOriginal)
+        {
+            var newCategory = new XElement("Category");
+
+            newCategory.Add(new XElement("Name", category.Element("Name").Value));
+
+            newCategory.Add(new XElement("Tests", ""));
+
+            foreach (var j in category.Element("Tests").Elements("Test"))
+            {
+                newCategory.Element("Tests").Add(EncryptTest(j));
+            }
+
+            xDocOriginal.Root.Add(newCategory);
+        }
+
+        private static void AppendCategory(XDocument xDocOriginal, XElement category)
+        {
+            // Assigning needed category from original file.
+            var originalCategory = xDocOriginal.Root.Elements("Category")
+                .First(j => category.Element("Name").Value == j.Element("Name").Value);
+
+            foreach (var test in category.Element("Tests").Elements("Test"))
+            {
+                // If there's identical names of both tests.
+                if (xDocOriginal.Root.Elements("Category").Elements("Tests").Elements("Test")
+                    .Any(n => n.Element("Name").Value == test.Element("Name").Value))
+                    continue;
+
+                originalCategory.Element("Tests").Add(EncryptTest(test));
+            }
+
+            // Replacing old category with new category in original file.
+            xDocOriginal.Root.Elements("Category")
+                .First(j => j.Element("Name").Value == category.Element("Name").Value).ReplaceWith(originalCategory);
         }
 
         /// <summary>
@@ -144,10 +154,10 @@ namespace TestingApplication.Classes
         /// <param name="path">Path to another XML-file.</param>
         private static void ReplaceXml(string path)
         {
-            var xDoc = XDocument.Load(path);
-            var xDocOriginal = XDocument.Load(TestsPath);
-            var schemaSet = new XmlSchemaSet();
-            bool isCorrect = true;
+            var  xDoc         = XDocument.Load(path);
+            var  xDocOriginal = XDocument.Load(TestsPath);
+            var  schemaSet    = new XmlSchemaSet();
+            var isCorrect    = true;
 
             schemaSet.Add("", "../../../ClassLibrary/XML/testsSchema.xsd");
 
@@ -164,6 +174,11 @@ namespace TestingApplication.Classes
 
             xDocOriginal.Root.RemoveNodes();
 
+            FillTestsFile(xDoc, xDocOriginal);
+        }
+
+        private static void FillTestsFile(XDocument xDoc, XDocument xDocOriginal)
+        {
             foreach (var i in xDoc.Root.Elements("Category"))
             {
                 var category = new XElement("Category", "");
@@ -190,7 +205,7 @@ namespace TestingApplication.Classes
         {
             var res = MessageBox
                 .Show("Choose \"yes\" if you want to append another XML-file to current, " +
-                              "\"no\", if you want to replace current file by another;",
+                      "\"no\", if you want to replace current file by another;",
                     "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             try

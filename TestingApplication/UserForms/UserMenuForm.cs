@@ -9,7 +9,8 @@ namespace TestingApplication.UserForms
     public partial class UserMenuForm : Form
     {
         private readonly XElement _user;
-        private XElement _unfinishedTest;
+        private          XElement _unfinishedTest;
+
         private readonly List<string> _operations = new List<string>
         {
             "Pass a test",
@@ -39,8 +40,9 @@ namespace TestingApplication.UserForms
             try
             {
                 // If there's a unfinished test, adding a specific operation to Operations.
-                _unfinishedTest = _user.Element("Tests").Elements("Test")
-                    .First(i => i.Attribute("finished").Value == "false");
+                _unfinishedTest = _user.Element("Tests")
+                    ?.Elements("Test")
+                    .First(i => i.Attribute("finished")?.Value == "false");
 
                 // If Operations already has option to "continue an unfinished test".
                 if (!_operations.Exists(i => i == "Continue an unfinished test"))
