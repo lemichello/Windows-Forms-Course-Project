@@ -40,7 +40,8 @@ namespace TestingApplication.AdminForms
 
         private void CategoriesList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CategoryNameBox.Text = (string)CategoriesList.Items[CategoriesList.SelectedIndex];
+            if(CategoriesList.SelectedIndex != -1)
+                CategoryNameBox.Text = (string)CategoriesList.Items[CategoriesList.SelectedIndex];
         }
     }
 }

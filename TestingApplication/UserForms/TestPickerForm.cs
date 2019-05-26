@@ -36,6 +36,7 @@ namespace TestingApplication.UserForms
             else
             {
                 MainForm.ThrowException("There\'s no available tests. Check out later.");
+                DialogResult = DialogResult.Cancel;
 
                 Close();
             }
@@ -43,7 +44,8 @@ namespace TestingApplication.UserForms
 
         private void TestsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ConfirmButton.Visible = true;
+            if(TestsBox.SelectedIndex != -1)
+                ConfirmButton.Visible = true;
         }
 
         private void ConfirmButton_Click(object sender, EventArgs e)

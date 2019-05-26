@@ -324,6 +324,14 @@ namespace TestingApplication.AdminForms
 
                 var questionText = variantForm.QuestionText;
 
+                if (QuestionExists(questionText, test))
+                {
+                    MainForm.ThrowException("Texts of questions must be unique");
+
+                    i -= 1;
+                    continue;
+                }
+
                 question.Add(new XElement("Text", StringCipher.Encrypt(questionText)));
                 question.Add(new XElement("Variants", ""));
 
@@ -344,6 +352,12 @@ namespace TestingApplication.AdminForms
             category?.Element("Tests")?.Add(test);
 
             xDoc.Save(TestsPath);
+        }
+
+        private static bool QuestionExists(string questionText, XElement test)
+        {
+            return test.Elements("Question").Any() && test.Elements("Question")
+                       .Any(i => StringCipher.Decrypt(i.Element("Text")?.Value) == questionText);
         }
 
         /// <summary>

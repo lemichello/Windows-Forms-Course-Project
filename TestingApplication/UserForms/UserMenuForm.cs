@@ -84,7 +84,7 @@ namespace TestingApplication.UserForms
         {
             var form = new TestPickerForm();
 
-            if (form.ShowDialog() != DialogResult.OK)
+            if (form.DialogResult == DialogResult.Cancel || form.ShowDialog() != DialogResult.OK)
                 return;
 
             var container = new TestsContainer(form.TestName, _user) {MenuParent = this};

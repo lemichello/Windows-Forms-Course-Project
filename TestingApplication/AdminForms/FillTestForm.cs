@@ -16,25 +16,20 @@ namespace TestingApplication.AdminForms
 
         private void ConfirmButton_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(QuestionTextBox.Text) ||
-                string.IsNullOrWhiteSpace(Variant1TextBox.Text) ||
-                string.IsNullOrWhiteSpace(Variant2TextBox.Text) ||
-                string.IsNullOrWhiteSpace(Variant3TextBox.Text))
+            if (IsEmptyBox())
             {
                 MainForm.ThrowException("Incorrect form of the question or variant");
 
                 return;
             }
 
-            if (Variant1TextBox.Text == Variant2TextBox.Text ||
-                Variant1TextBox.Text == Variant3TextBox.Text ||
-                Variant2TextBox.Text == Variant3TextBox.Text)
+            if (!IsUniqueBoxes())
             {
                 MainForm.ThrowException("All question variants must be unique");
-                
+
                 return;
             }
-            
+
             if (!Variant1RadioButton.Checked &&
                 !Variant2RadioButton.Checked &&
                 !Variant3RadioButton.Checked)
@@ -56,6 +51,21 @@ namespace TestingApplication.AdminForms
             DialogResult = DialogResult.OK;
 
             Close();
+        }
+
+        private bool IsEmptyBox()
+        {
+            return string.IsNullOrWhiteSpace(QuestionTextBox.Text) ||
+                   string.IsNullOrWhiteSpace(Variant1TextBox.Text) ||
+                   string.IsNullOrWhiteSpace(Variant2TextBox.Text) ||
+                   string.IsNullOrWhiteSpace(Variant3TextBox.Text);
+        }
+
+        private bool IsUniqueBoxes()
+        {
+            return Variant1TextBox.Text != Variant2TextBox.Text &&
+                   Variant1TextBox.Text != Variant3TextBox.Text &&
+                   Variant2TextBox.Text != Variant3TextBox.Text;
         }
     }
 }
